@@ -1,16 +1,17 @@
 /**
   ******************************************************************************
-  * @file    common.h    
-  * @author  GREE/A10211
-  * @version 1.0 
+  * @file    common.h
+  * @author  PQ(pq_liu@foxmail.com)
+  * @version 1.0
   * @date    2020.11.17
-  * @brief   È°∂Â±ÇÂ§¥Êñá‰ª∂
+  * @brief   ∂•≤„Õ∑Œƒº˛
   ******************************************************************************
   *
-  * ÁâàÊú¨Êõ¥Êñ∞
+  * @section   History
   * <table>
   *     <tr><th>Version     <th>Data        <th>Author      <th>Notes
   *     <tr><td>V1.0        <td>2020.11.27  <td>A10211      <td>First implementation
+  *     <tr><td>V1.0        <td>2021.09.30  <td>PQ          <td>
   * </table>
   ******************************************************************************
   */
@@ -21,23 +22,21 @@
 /* Includes ------------------------------------------------------------------*/
 #include <stdio.h>
 #include <string.h>
-#include "stm32f10x.h"
-
-#include "rtconfig.h"                                   //RTÈÖçÁΩÆÊñá‰ª∂
-#include "rtthread.h"
 
 //#include "bool.h"
 
+/* Board Support define ------------------------------------------------------*/
+
 /* Exported define -----------------------------------------------------------*/
-#define DEBUG_CODE                                      ///< ÂêØÁî®DEBUG_LOG_CORE()ËæìÂá∫
-#define DEBUG_LOG_EN                                    ///< ÂêØÁî®DEBUG_LOG()ËæìÂá∫
+// #define DEBUG_CODE                                      ///< ∆Ù”√DEBUG_LOG_CORE() ‰≥ˆ
+// #define DEBUG_LOG_EN                                    ///< ∆Ù”√DEBUG_LOG() ‰≥ˆ
 
-#define DEBUG_ERROR                         1           ///< ÂêØÁî®ERRORÁ≠âÁ∫ßLogËæìÂá∫
-#define DEBUG_WARNING                       1           ///< ÂêØÁî®WARNINGÁ≠âÁ∫ßLogËæìÂá∫
-#define DEBUG_INFO                          1           ///< ÂêØÁî®INFOÁ≠âÁ∫ßLogËæìÂá∫
+#define DEBUG_ERROR                         1           ///< ∆Ù”√ERRORµ»º∂Log ‰≥ˆ
+#define DEBUG_WARNING                       1           ///< ∆Ù”√WARNINGµ»º∂Log ‰≥ˆ
+#define DEBUG_INFO                          1           ///< ∆Ù”√INFOµ»º∂Log ‰≥ˆ
 
-//CPU ÁöÑ‰ΩçÂÆΩ
-#define ALIGN_SIZE                          (4u)        ///< CPU‰ΩçÂÆΩÂÆö‰πâ
+//CPU µƒŒªøÌ
+#define ALIGN_SIZE                          (4u)        ///< CPUŒªøÌ∂®“Â
 
 #define UINT32_MAX                          (0xFFFFFFFF)
 #define UINT16_MAX                          (0xFFFF)
@@ -60,34 +59,39 @@
 
 #define MAX(a,b)                            ((a>b)?(a):(b))
 #define MIN(a,b)                            ((a<b)?(a):(b))
+
 /* Exported types ------------------------------------------------------------*/
 /**
   * @enum   eErrStatus_t
-  * @brief  ÈîôËØØÁ±ªÂûãÊûö‰∏æ
+  * @brief  ¥ÌŒÛ¿‡–Õ√∂æŸ
   */
-typedef enum 
+typedef enum
 {
-    ERR_OK          =0,                                 ///< Ê≤°ÊúâÈîôËØØ
-    ERR_ERROR       =1,                                 ///< ‰∏ÄËà¨ÈîôËØØ
-    ERR_TIMEOUT     =2,                                 ///< Ë∂ÖÊó∂
-    ERR_FULL        =3,                                 ///< Â∑≤Êª°
-    ERR_EMPTY       =3,                                 ///< Á©∫
-    ERR_INVAL_DATA  =5,                                 ///< Êï∞ÊçÆÊó†Êïà
-    ERR_CHECK_FAIL  =6,                                 ///< Êï∞ÊçÆÊ£ÄÊü•‰∏çÈÄöËøá
+    ERR_NONE          =0,                                 ///< √ª”–¥ÌŒÛ
+    ERR_ERROR         =1,                                 ///< “ª∞„¥ÌŒÛ
+    ERR_TIMEOUT       =2,                                 ///< ≥¨ ±
+    ERR_FULL          =3,                                 ///< “—¬˙
+    ERR_EMPTY         =3,                                 ///< ø’
+    ERR_DATA_INVAL    =5,                                 ///<  ˝æ›Œﬁ–ß
+    ERR_DATA_OVERLONG =6,                                 ///<  ˝æ›Ã´≥§
+    ERR_BUSY          =7,                                 ///< √¶¬µ÷–
+    ERR_CHECK_FAIL    =8,                                 ///<  ˝æ›ºÏ≤È≤ªÕ®π˝
 }eErrStatus_t;
+
 /**
   * @enum   eFlag_t
-  * @brief  Áä∂ÊÄÅÁöÑÊûö‰∏æ„ÄÅÂíåÁ±ªBoolÂûã
+  * @brief  ◊¥Ã¨µƒ√∂æŸ°¢∫Õ¿‡Bool–Õ
   */
-typedef enum 
+typedef enum
 {
-    Reset=0,                                            ///< Â§ç‰Ωç/False
-    Set=!Reset                                          ///< ÁΩÆ‰Ωç/True
+    Reset=0,                                            ///< ∏¥Œª/False
+    Set=!Reset                                          ///< ÷√Œª/True
 } eFlag_t, eBool_t;
 /* Exported typedef ----------------------------------------------------------*/
-typedef unsigned          char  byte;
-typedef unsigned short     int  halfword;
-typedef unsigned           int  word;
+typedef                  _Bool  Bool;
+typedef unsigned          char  Byte;
+typedef unsigned short     int  Word;
+typedef unsigned           int  DWord;
 
 /* Exported functions ------------------------------------------------------- */
 
