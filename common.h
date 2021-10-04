@@ -2,22 +2,27 @@
   ******************************************************************************
   * @file    common.h
   * @author  PQ(pq_liu@foxmail.com)
-  * @version 1.0
-  * @date    2020.11.17
-  * @brief   顶层头文件
+  * @version V0.1.2
+  * @date    2021.10.04
+  * @brief   top header file
   ******************************************************************************
   *
   * @section   History
   * <table>
   *     <tr><th>Version     <th>Data        <th>Author      <th>Notes
-  *     <tr><td>V1.0        <td>2020.11.27  <td>A10211      <td>First implementation
-  *     <tr><td>V1.1        <td>2021.10. 2  <td>PQ          <td>add color_log
+  *     <tr><td>V0.1.0      <td>2020.11.27  <td>A10211      <td>First implementation
+  *     <tr><td>V0.1.1      <td>2021.10.02  <td>PQ          <td>add color_log
+  *     <tr><td>V0.1.2      <td>2021.10.04  <td>PQ          <td>add DEBUG_MAIN_OUT_EN add cplusplus support
   * </table>
   ******************************************************************************
   */
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __COMMON_H
 #define __COMMON_H
+
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
 /* Includes ------------------------------------------------------------------*/
 #include <stdio.h>
@@ -26,7 +31,6 @@
 #include <string.h>
 
 //#include "bool.h"
-
 /* Board Support define ------------------------------------------------------*/
 #define     SYSTEM_CORE_CLOCK       96000000ul
 
@@ -37,17 +41,21 @@
 
 /* Exported define -----------------------------------------------------------*/
 /* DEBUG **************************************/
+#define DEBUG_MAIN_OUT_EN                                           ///< DEBUG LOG MAIN EN  总开关
+
+#ifdef DEBUG_MAIN_OUT_EN
 /* redirect dbg out */
 #define _DBG_OUT(format, ...)                   SEGGER_RTT_printf(0,format, ##__VA_ARGS__)
 
-// #define DBG_PRINT_EN                                                ///< 启用DBG_PRINT()输出
+#define DBG_PRINT_EN                                                ///< 启用DBG_PRINT()输出
 #define DBG_LOG_EN                                                  ///< 启用DBG_LOG()输出
 #define DBG_LOG_COLOR_EN                                            ///< 启用DBG_LOG_COL()颜色输出
+#endif /* end of #ifdef DEBUG_MAIN_OUT_EN */
 
-#define DBG_E                                   1                   ///< 1 启用 ERROR    等级输出
-#define DBG_W                                   2                   ///< 2 启用 WARNING  等级输出
-#define DBG_I                                   3                   ///< 3 启用 INFO     等级输出
-#define DBG_L                                   4                   ///< 4 启用 LOG      等级输出
+#define DBG_E                                   1                   ///< 1 启用 0关闭 ERROR    等级输出
+#define DBG_W                                   2                   ///< 2 启用 0关闭 WARNING  等级输出
+#define DBG_I                                   3                   ///< 3 启用 0关闭 INFO     等级输出
+#define DBG_L                                   4                   ///< 4 启用 0关闭 LOG      等级输出
 
 
 /* MCU ****************************************/
@@ -202,15 +210,24 @@
   */
 typedef enum
 {
-    ERR_NONE          =0,                                 ///< 没有错误
-    ERR_ERROR         =1,                                 ///< 一般错误
-    ERR_TIMEOUT       =2,                                 ///< 超时
-    ERR_FULL          =3,                                 ///< 已满
-    ERR_EMPTY         =3,                                 ///< 空
-    ERR_INVAL         =5,                                 ///< 参数无效
-    ERR_DATA_OVERLONG =6,                                 ///< 数据太长
-    ERR_BUSY          =7,                                 ///< 忙碌中
-    ERR_CHECK_FAIL    =8,                                 ///< 数据检查不通过
+        ERR_NONE            =0,                         ///< 没有错误
+#define ERR_NONE             0
+        ERR_ERROR           =1,                         ///< 一般错误
+#define ERR_ERROR            1
+        ERR_TIMEOUT         =2,                         ///< 超时
+#define ERR_TIMEOUT          2
+        ERR_FULL            =3,                         ///< 已满
+#define ERR_FULL             3
+        ERR_EMPTY           =4,                         ///< 空
+#define ERR_EMPTY            4
+        ERR_INVAL           =5,                         ///< 参数无效
+#define ERR_INVAL            5
+        ERR_DATA_OVERLONG   =6,                         ///< 数据太长
+#define ERR_DATA_OVERLONG    6
+        ERR_BUSY            =7,                         ///< 忙碌中
+#define ERR_BUSY             7
+        ERR_CHECK_FAIL      =8,                         ///< 数据检查不通过
+#define ERR_CHECK_FAIL       8
 }eErrStatus_t;
 
 /**
@@ -233,6 +250,9 @@ typedef unsigned           int     DWord;
 
 /* Includes ------------------------------------------------------------------*/
 
+#ifdef __cplusplus
+}
+#endif  /* __cplusplus */
 
 #endif /* #ifndef __COMMON_H */
 /************************************END OF FILE********************************/
