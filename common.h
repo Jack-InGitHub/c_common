@@ -30,140 +30,27 @@
 #include <stdint.h>
 #include <string.h>
 
-//#include "bool.h"
+// #include "bool.h"
+
 /* Board Support define ------------------------------------------------------*/
 #define     SYSTEM_CORE_CLOCK       96000000ul
 
-#define     SEC(X)                  ((X)*SYSTEM_CORE_CLOCK) //MAX 44.7s
+#define     SEC(X)                  ((X)*SYSTEM_CORE_CLOCK)             //MAX xS
 #define     MSEC(X)                 (SYSTEM_CORE_CLOCK/1000*(X))
 #define     USEC(X)                 (SYSTEM_CORE_CLOCK/1000000*(X))
 
 
 /* Exported define -----------------------------------------------------------*/
-/* DEBUG **************************************/
-#define DEBUG_MAIN_OUT_EN                                           ///< DEBUG LOG MAIN EN  总开关
-
-#ifdef DEBUG_MAIN_OUT_EN
-/* redirect dbg out */
-#define _DBG_OUT(format, ...)                   SEGGER_RTT_printf(0,format, ##__VA_ARGS__)
-
-#define DBG_PRINT_EN                                                ///< 启用DBG_PRINT()输出
-#define DBG_LOG_EN                                                  ///< 启用DBG_LOG()输出
-#define DBG_LOG_COLOR_EN                                            ///< 启用DBG_LOG_COL()颜色输出
-#endif /* end of #ifdef DEBUG_MAIN_OUT_EN */
-
-#define DBG_E                                   1                   ///< 1 启用 0关闭 ERROR    等级输出
-#define DBG_W                                   2                   ///< 2 启用 0关闭 WARNING  等级输出
-#define DBG_I                                   3                   ///< 3 启用 0关闭 INFO     等级输出
-#define DBG_L                                   4                   ///< 4 启用 0关闭 LOG      等级输出
-
-
 /* MCU ****************************************/
 //CPU 的位宽
-#define ALIGN_SIZE                              (4u)                ///< CPU位宽定义
+#define ALIGN_SIZE                                  (4u)                ///< CPU位宽定义
 
 /* C ******************************************/
-#define UINT32_MAX                              (0xFFFFFFFF)
-#define UINT16_MAX                              (0xFFFF)
-#define UINT8_MAX                               (0xFF)
+#define UINT32_MAX                                  (0xFFFFFFFF)
+#define UINT16_MAX                                  (0xFFFF)
+#define UINT8_MAX                                   (0xFF)
 
-
-/* Exported macro ------------------------------------------------------------*/
-#ifdef DBG_LOG_COLOR_EN
-/**Control sequences, based on ANSI.
- * Can be used to control color, and clear the screen
- */
-#define DBG_COL_RESET                           "\x1B[0m"           ///< Reset to default colors
-#define DBG_COL_CLEAR                           "\x1B[2J"           ///< Clear screen, reposition cursor to top left
-
-#define DBG_COL_TEXT_BLACK                      "\x1B[2;30m"
-#define DBG_COL_TEXT_RED                        "\x1B[2;31m"
-#define DBG_COL_TEXT_GREEN                      "\x1B[2;32m"
-#define DBG_COL_TEXT_YELLOW                     "\x1B[2;33m"
-#define DBG_COL_TEXT_BLUE                       "\x1B[2;34m"
-#define DBG_COL_TEXT_MAGENTA                    "\x1B[2;35m"
-#define DBG_COL_TEXT_CYAN                       "\x1B[2;36m"
-#define DBG_COL_TEXT_WHITE                      "\x1B[2;37m"
-
-#define DBG_COL_TEXT_BRIGHT_BLACK               "\x1B[1;30m"
-#define DBG_COL_TEXT_BRIGHT_RED                 "\x1B[1;31m"
-#define DBG_COL_TEXT_BRIGHT_GREEN               "\x1B[1;32m"
-#define DBG_COL_TEXT_BRIGHT_YELLOW              "\x1B[1;33m"
-#define DBG_COL_TEXT_BRIGHT_BLUE                "\x1B[1;34m"
-#define DBG_COL_TEXT_BRIGHT_MAGENTA             "\x1B[1;35m"
-#define DBG_COL_TEXT_BRIGHT_CYAN                "\x1B[1;36m"
-#define DBG_COL_TEXT_BRIGHT_WHITE               "\x1B[1;37m"
-
-#define DBG_COL_BG_BLACK                        "\x1B[24;40m"
-#define DBG_COL_BG_RED                          "\x1B[24;41m"
-#define DBG_COL_BG_GREEN                        "\x1B[24;42m"
-#define DBG_COL_BG_YELLOW                       "\x1B[24;43m"
-#define DBG_COL_BG_BLUE                         "\x1B[24;44m"
-#define DBG_COL_BG_MAGENTA                      "\x1B[24;45m"
-#define DBG_COL_BG_CYAN                         "\x1B[24;46m"
-#define DBG_COL_BG_WHITE                        "\x1B[24;47m"
-
-#define DBG_COL_BG_BRIGHT_BLACK                 "\x1B[4;40m"
-#define DBG_COL_BG_BRIGHT_RED                   "\x1B[4;41m"
-#define DBG_COL_BG_BRIGHT_GREEN                 "\x1B[4;42m"
-#define DBG_COL_BG_BRIGHT_YELLOW                "\x1B[4;43m"
-#define DBG_COL_BG_BRIGHT_BLUE                  "\x1B[4;44m"
-#define DBG_COL_BG_BRIGHT_MAGENTA               "\x1B[4;45m"
-#define DBG_COL_BG_BRIGHT_CYAN                  "\x1B[4;46m"
-#define DBG_COL_BG_BRIGHT_WHITE                 "\x1B[4;47m"
-
-#define DBG_COL(n)                              "\x1B[2;"#n"m"
-#endif  /* end of DBG_LOG_COLOR_EN */
-
-#ifdef DBG_PRINT_EN
-#define DBG_PRINT(format, ...)                  _DBG_OUT(format, ##__VA_ARGS__)
-#else
-#define DBG_PRINT(format, ...)
-#endif  /* end of DBG_PRINT_EN */
-
-#ifdef DBG_LOG_COLOR_EN
-#define DBG_LOG_COL(color, format, ...)         _DBG_OUT(color format DBG_COL_RESET, ##__VA_ARGS__ );
-#else
-#define DBG_LOG_COL(color, format, ...)
-#endif  /* end of DBG_LOG_COLOR_EN */
-
-#ifdef DBG_LOG_COLOR_EN
-    #ifdef DBG_LOG_EN
-    #define DBG_LOG(type, format, ...)                                          \
-    do{                                                                         \
-    if(type != 0)                                                               \
-    {                                                                           \
-        if      (type == DBG_E)                                                 \
-        {                                                                       \
-            DBG_LOG_COL(DBG_COL_TEXT_RED,       "E:" format, ##__VA_ARGS__);    \
-        }                                                                       \
-        else if (type == DBG_W)                                                 \
-        {                                                                       \
-            DBG_LOG_COL(DBG_COL_TEXT_YELLOW,    "W:" format, ##__VA_ARGS__);    \
-        }                                                                       \
-        else if (type == DBG_I)                                                 \
-        {                                                                       \
-            DBG_LOG_COL(DBG_COL_TEXT_BLUE,      "I:" format, ##__VA_ARGS__);    \
-        }                                                                       \
-        else if (type == DBG_L)                                                 \
-        {                                                                       \
-            DBG_LOG_COL(DBG_COL_RESET,          "L:" format, ##__VA_ARGS__);    \
-        }                                                                       \
-    }                                                                           \
-    }while(0);
-    #else
-    #define DBG_LOG(type, format, ...)
-    #endif
-#else
-    #ifdef DBG_LOG_EN
-    #define DBG_LOG(type, format, ...)        do{ if(type!=0){_DBG_OUT(#type ":" format, ##__VA_ARGS__ );} }while (0)
-    #else
-    #define DBG_LOG(type, format, ...)
-    #endif
-#endif  /* End of #ifdef DBG_LOG_COLOR_EN */
-
-
-/* Compiler Related Definitions */
+/* Compiler Related Definitions ***************/
 #if defined(__CC_ARM) || defined(__CLANG_ARM)       /* ARM Compiler */
     #define C_SECTION(x)                            __attribute__((section(x)))
     #define C_UNUSED                                __attribute__((unused))
@@ -192,13 +79,22 @@
     #error not supported tool chain
 #endif
 
+/* volatile ***********************************/
+#if 0
+#ifdef __cplusplus
+  #define   __I     volatile             /*!< Defines 'read only' permissions                 */
+#else
+  #define   __I     volatile const       /*!< Defines 'read only' permissions                 */
+#endif
+#define     __O     volatile             /*!< Defines 'write only' permissions                */
+#define     __IO    volatile             /*!< Defines 'read / write' permissions              */
+#endif
+
+/* Exported macro ------------------------------------------------------------*/
 
 
-
+/* USEFUL *************************************/
 #define MEM_ZERO_SET(x)                     do{ memset((void*)&(x), 0l, (sizeof(x))); }while(0)
-
-
-
 
 #define MAX(a,b)                            ((a>b)?(a):(b))
 #define MIN(a,b)                            ((a<b)?(a):(b))
@@ -255,4 +151,4 @@ typedef unsigned           int     DWord;
 #endif  /* __cplusplus */
 
 #endif /* #ifndef __COMMON_H */
-/************************************END OF FILE********************************/
+/* ------------------------------- END OF FILE ------------------------------- */
