@@ -34,21 +34,63 @@
 
 /* Board Support define ------------------------------------------------------*/
 #define     SYSTEM_CORE_CLOCK       96000000ul
+#define     SYSTEM_CORE_CLOCK_KHZ   (SYSTEM_CORE_CLOCK/1000)
+#define     SYSTEM_CORE_CLOCK_MHZ   (SYSTEM_CORE_CLOCK_KHZ/1000)
 
-#define     SEC(X)                  ((X)*SYSTEM_CORE_CLOCK)             //MAX xS
+#define     SEC(X)                  ((X)*SYSTEM_CORE_CLOCK)
 #define     MSEC(X)                 (SYSTEM_CORE_CLOCK/1000*(X))
 #define     USEC(X)                 (SYSTEM_CORE_CLOCK/1000000*(X))
 
 
 /* Exported define -----------------------------------------------------------*/
 /* MCU ****************************************/
-//CPU µÄÎ»¿í
-#define ALIGN_SIZE                                  (4u)                ///< CPUÎ»¿í¶¨Òå
+//CPU çš„ä½å®½
+#define ALIGN_SIZE                  (4u)                ///< CPUä½å®½å®šä¹‰
 
 /* C ******************************************/
-#define UINT32_MAX                                  (0xFFFFFFFF)
-#define UINT16_MAX                                  (0xFFFF)
-#define UINT8_MAX                                   (0xFF)
+#define BITS_NO                     (0x00000000)
+#define BITS_ALL                    (0xFFFFFFFF)
+#define BIT_0                       (0x00000001)
+#define BIT_1                       (0x00000002)
+#define BIT_2                       (0x00000004)
+#define BIT_3                       (0x00000008)
+#define BIT_4                       (0x00000010)
+#define BIT_5                       (0x00000020)
+#define BIT_6                       (0x00000040)
+#define BIT_7                       (0x00000080)
+#define BIT_8                       (0x00000100)
+#define BIT_9                       (0x00000200)
+#define BIT_10                      (0x00000400)
+#define BIT_11                      (0x00000800)
+#define BIT_12                      (0x00001000)
+#define BIT_13                      (0x00002000)
+#define BIT_14                      (0x00004000)
+#define BIT_15                      (0x00008000)
+#define BIT_16                      (0x00010000)
+#define BIT_17                      (0x00020000)
+#define BIT_18                      (0x00040000)
+#define BIT_19                      (0x00080000)
+#define BIT_20                      (0x00100000)
+#define BIT_21                      (0x00200000)
+#define BIT_22                      (0x00400000)
+#define BIT_23                      (0x00800000)
+#define BIT_24                      (0x01000000)
+#define BIT_25                      (0x02000000)
+#define BIT_26                      (0x04000000)
+#define BIT_27                      (0x08000000)
+#define BIT_28                      (0x10000000)
+#define BIT_29                      (0x20000000)
+#define BIT_30                      (0x40000000)
+#define BIT_31                      (0x80000000)
+
+#define BYTE_0                      (BIT_7  | BIT_6  | BIT_5  | BIT_4  | BIT_3  | BIT_2  | BIT_1  | BIT_0  )
+#define BYTE_1                      (BIT_15 | BIT_14 | BIT_13 | BIT_12 | BIT_11 | BIT_10 | BIT_9  | BIT_8  )
+#define BYTE_2                      (BIT_23 | BIT_22 | BIT_21 | BIT_20 | BIT_19 | BIT_18 | BIT_17 | BIT_16 )
+#define BYTE_3                      (BIT_31 | BIT_30 | BIT_29 | BIT_28 | BIT_27 | BIT_26 | BIT_25 | BIT_24 )
+
+#define UINT32_MAX                  (0xFFFFFFFF)
+#define UINT16_MAX                  (0xFFFF)
+#define UINT8_MAX                   (0xFF)
 
 /* Compiler Related Definitions ***************/
 #if defined(__CC_ARM) || defined(__CLANG_ARM)       /* ARM Compiler */
@@ -102,38 +144,38 @@
 /* Exported types ------------------------------------------------------------*/
 /**
   * @enum   eErrStatus_t
-  * @brief  ´íÎóÀàÐÍÃ¶¾Ù
+  * @brief  é”™è¯¯ç±»åž‹æžšä¸¾
   */
 typedef enum
 {
-        ERR_NONE            =0,                         ///< Ã»ÓÐ´íÎó
+        ERR_NONE            =0,                         ///< æ²¡æœ‰é”™è¯¯
 #define ERR_NONE             0
-        ERR_ERROR           =1,                         ///< Ò»°ã´íÎó
+        ERR_ERROR           =1,                         ///< ä¸€èˆ¬é”™è¯¯
 #define ERR_ERROR            1
-        ERR_TIMEOUT         =2,                         ///< ³¬Ê±
+        ERR_TIMEOUT         =2,                         ///< è¶…æ—¶
 #define ERR_TIMEOUT          2
-        ERR_FULL            =3,                         ///< ÒÑÂú
+        ERR_FULL            =3,                         ///< å·²æ»¡
 #define ERR_FULL             3
-        ERR_EMPTY           =4,                         ///< ¿Õ
+        ERR_EMPTY           =4,                         ///< ç©º
 #define ERR_EMPTY            4
-        ERR_INVAL           =5,                         ///< ²ÎÊýÎÞÐ§
+        ERR_INVAL           =5,                         ///< å‚æ•°æ— æ•ˆ
 #define ERR_INVAL            5
-        ERR_DATA_OVERLONG   =6,                         ///< Êý¾ÝÌ«³¤
+        ERR_DATA_OVERLONG   =6,                         ///< æ•°æ®å¤ªé•¿
 #define ERR_DATA_OVERLONG    6
-        ERR_BUSY            =7,                         ///< Ã¦ÂµÖÐ
+        ERR_BUSY            =7,                         ///< å¿™ç¢Œä¸­
 #define ERR_BUSY             7
-        ERR_CHECK_FAIL      =8,                         ///< Êý¾Ý¼ì²é²»Í¨¹ý
+        ERR_CHECK_FAIL      =8,                         ///< æ•°æ®æ£€æŸ¥ä¸é€šè¿‡
 #define ERR_CHECK_FAIL       8
 }eErrStatus_t;
 
 /**
   * @enum   eFlag_t
-  * @brief  ×´Ì¬µÄÃ¶¾Ù¡¢ÀàBoolÐÍ
+  * @brief  çŠ¶æ€çš„æžšä¸¾ã€ç±»Boolåž‹
   */
 typedef enum
 {
-    eRESET=0,                                             ///< ¸´Î»/False
-    eSET=!eRESET                                          ///< ÖÃÎ»/True
+    eRESET=0,                                             ///< å¤ä½/False
+    eSET=!eRESET                                          ///< ç½®ä½/True
 } eFlag_t, eBool_t;
 /* Exported typedef ----------------------------------------------------------*/
 typedef                  _Bool      Bool;
