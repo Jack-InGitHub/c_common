@@ -1,15 +1,16 @@
 /**
  * @file    debug.h
  * @author  PQ.liu
- * @brief   简单的日志实现
- * @version 0.2
- * @date    2023-03-24
+ * @brief   简单日志输出组件
+ * @version 0.1.0
+ * @date    2023-03-28
  * 
  * @section   History
  * <table>
  *     <tr><th>Version <th>Data        <th>Author  <th>Notes
- *     <tr><td>V0.1    <td>2021-10-26  <td>PQ      <td>First Version
- *     <tr><td>V0.2    <td>2023-03-24  <td>PQ.liu  <td>增加自动添加换行、增加日志所在行及所在文件显示
+ *     <tr><td>V0.0.1  <td>2021-10-26  <td>PQ      <td>First Version
+ *     <tr><td>V0.0.2  <td>2023-03-24  <td>PQ.liu  <td>增加自动添加换行、增加日志所在行及所在文件显示
+ *     <tr><td>V0.1.0  <td>2023-03-28  <td>PQ.liu  <td>增加DBG_LOG_E()等函数
  * </table>
  * @details 输出函数变更时，需要修改 _DBG_OUT_RAW 的重定向
  */
@@ -26,9 +27,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
+/* Redirect Includes ***************************/
 
 /* Config --------------------------------------------------------------------*/
 #define DEBUG_MAIN_OUT_EN                                           ///< DEBUG LOG MAIN EN  总开关
@@ -38,18 +38,24 @@
 
 #define DEBGU_NEWLINE_EN                                            ///< 使能log换行
 
-#define DEBGU_DISPLAY_FILE_AND_LINE_EN                              ///< 使能log文件及行数显示
+#define DEBGU_DISPLAY_FILE_AND_LINE_EN                              ///< log中显示 文件及行数
 
-#define DBG_PRINT_EN                                                ///< 启用DBG_PRINT()输出
-#define DBG_LOG_EN                                                  ///< 启用DBG_LOG() 输出
-#define DBG_LOG_COLOR_EN                                            ///< 启用DBG_LOG() 颜色输出
+#define DBG_LOG_COLOR_EN                                            ///< 启用颜色支持
+
+#define DBG_PRINT_FUN_EN                                            ///< 启用DBG_PRINT() 宏 的输出
+#define DBG_LOG_COL_FUN_EN                                          ///< 启用DBG_LOG_COL() 宏 的输出
+#define DBG_LOG_FUN_EN                                              ///< 启用DBG_LOG() 宏 的输出
 
 #define DBG_F                                   1                   ///< 1 启用 0关闭 FATAL    等级输出
 #define DBG_E                                   2                   ///< 2 启用 0关闭 ERROR    等级输出
 #define DBG_W                                   3                   ///< 3 启用 0关闭 WARNING  等级输出
 #define DBG_I                                   4                   ///< 4 启用 0关闭 INFO     等级输出
 #define DBG_D                                   5                   ///< 5 启用 0关闭 DEBUG    等级输出
-
+// // 使用下面的定义在 x.c 文件内单独控制LOG的输出
+// #ifdef DBG_F
+// #undef DBG_F
+// #define DBG_F                                   0                   ///< 1 启用 0关闭 FATAL    等级输出
+// #endif
 #endif /* end of #ifdef DEBUG_MAIN_OUT_EN */
 
 /* Redirect ************************************/
@@ -115,59 +121,83 @@
 #define _DBG_OUT(format, ...)                   _DBG_OUT_RAW(format DEBGU_NEWLINE, ##__VA_ARGS__)
 #endif
 
-
-
-#ifdef DBG_PRINT_EN
+#ifdef DBG_PRINT_FUN_EN
 #define DBG_PRINT(format, ...)                  _DBG_OUT(format, ##__VA_ARGS__)
 #else
-#define DBG_PRINT(format, ...)
-#endif  /* end of DBG_PRINT_EN */
+#define DBG_PRINT(format, ...)                  do{}while(0)
+#endif  /* end of DBG_PRINT_FUN_EN */
 
-#ifdef DBG_LOG_COLOR_EN
-#define DBG_LOG_COL(color, format, ...)         _DBG_OUT(color format DBG_COL_RESET, ##__VA_ARGS__ )
+#ifdef DBG_LOG_COL_FUN_EN
+    #ifdef DBG_LOG_COLOR_EN
+    #define DBG_LOG_COL(color, format, ...)     _DBG_OUT(color format DBG_COL_RESET, ##__VA_ARGS__ )
+    #else
+    #define DBG_LOG_COL(color, format,...)      _DBG_OUT(format, ##__VA_ARGS__ )
+    #endif  /* end of DBG_LOG_COLOR_EN */
 #else
-#define DBG_LOG_COL(color, format, ...)
-#endif  /* end of DBG_LOG_COLOR_EN */
+#define DBG_LOG_COL(color, format, ...)         do{}while(0)
+#endif  /* end of DBG_LOG_COL_FUN_EN */
 
-#ifdef DBG_LOG_COLOR_EN
-    #ifdef DBG_LOG_EN
+#ifdef DBG_LOG_FUN_EN
+    #ifdef DBG_LOG_COLOR_EN
     #define DBG_LOG(type, format, ...)                                          \
     do{                                                                         \
-    if(type != 0)                                                               \
+    if      (type != 0 && type == DBG_F)                                        \
     {                                                                           \
-        if      (type == DBG_F)                                                 \
-        {                                                                       \
-            DBG_LOG_COL(DBG_COL_BG_BRIGHT_RED   DBG_COL_TEXT_BRIGHT_YELLOW, "F:" format, ##__VA_ARGS__); \
-        }                                                                       \
-        if      (type == DBG_E)                                                 \
-        {                                                                       \
-            DBG_LOG_COL(DBG_COL_TEXT_RED,       "E:" format, ##__VA_ARGS__);    \
-        }                                                                       \
-        else if (type == DBG_W)                                                 \
-        {                                                                       \
-            DBG_LOG_COL(DBG_COL_TEXT_YELLOW,    "W:" format, ##__VA_ARGS__);    \
-        }                                                                       \
-        else if (type == DBG_I)                                                 \
-        {                                                                       \
-            DBG_LOG_COL(DBG_COL_TEXT_CYAN,      "I:" format, ##__VA_ARGS__);    \
-        }                                                                       \
-        else if (type == DBG_D)                                                 \
-        {                                                                       \
-            DBG_LOG_COL(DBG_COL_RESET,          "D:" format, ##__VA_ARGS__);    \
-        }                                                                       \
+        _DBG_OUT(DBG_COL_BG_BRIGHT_RED DBG_COL_TEXT_BRIGHT_YELLOW "F:" format DBG_COL_RESET, ##__VA_ARGS__); \
     }                                                                           \
-    }while(0);
+    if      (type != 0 && type == DBG_E)                                        \
+    {                                                                           \
+        _DBG_OUT(DBG_COL_TEXT_RED    "E:" format DBG_COL_RESET, ##__VA_ARGS__); \
+    }                                                                           \
+    else if (type != 0 && type == DBG_W)                                        \
+    {                                                                           \
+        _DBG_OUT(DBG_COL_TEXT_YELLOW "W:" format DBG_COL_RESET, ##__VA_ARGS__); \
+    }                                                                           \
+    else if (type != 0 && type == DBG_I)                                        \
+    {                                                                           \
+        _DBG_OUT(DBG_COL_TEXT_CYAN   "I:" format DBG_COL_RESET, ##__VA_ARGS__); \
+    }                                                                           \
+    else if (type != 0 && type == DBG_D)                                        \
+    {                                                                           \
+        _DBG_OUT(DBG_COL_RESET       "D:" format DBG_COL_RESET, ##__VA_ARGS__); \
+    }                                                                           \
+    }while(0)
     #else
-    #define DBG_LOG(type, format, ...)
-    #endif
+    #define DBG_LOG(type, format, ...)          do{ if(type!=0){_DBG_OUT(#type ":" format, ##__VA_ARGS__ );} }while(0)
+    #endif  /* end of DBG_LOG_COLOR_EN */
 #else
-    #ifdef DBG_LOG_EN
-    #define DBG_LOG(type, format, ...)        do{ if(type!=0){_DBG_OUT(#type ":" format, ##__VA_ARGS__ );} }while (0)
-    #else
-    #define DBG_LOG(type, format, ...)
-    #endif
-#endif  /* End of #ifdef DBG_LOG_COLOR_EN */
+#define DBG_LOG(type, format, ...)              do{}while(0)
+#endif /* end of DBG_LOG_FUN_EN */
 
+#if DBG_F != 0
+#define DBG_LOG_F(format,...)                   _DBG_OUT(DBG_COL_BG_BRIGHT_RED DBG_COL_TEXT_BRIGHT_YELLOW "Fatal:" format DBG_COL_RESET, ##__VA_ARGS__)
+#else
+#define DBG_LOG_F(format,...)                   do{}while(0)
+#endif
+
+#if DBG_E != 0
+#define DBG_LOG_E(format,...)                   _DBG_OUT(DBG_COL_TEXT_RED    "Error:"  format DBG_COL_RESET, ##__VA_ARGS__)
+#else
+#define DBG_LOG_E(format,...)                   do{}while(0)
+#endif
+
+#if DBG_W != 0
+#define DBG_LOG_W(format,...)                   _DBG_OUT(DBG_COL_TEXT_YELLOW "Waring:" format DBG_COL_RESET, ##__VA_ARGS__)
+#else
+#define DBG_LOG_W(format,...)                   do{}while(0)
+#endif
+
+#if DBG_I != 0
+#define DBG_LOG_I(format,...)                   _DBG_OUT(DBG_COL_TEXT_CYAN   "Info:"   format DBG_COL_RESET, ##__VA_ARGS__)
+#else
+#define DBG_LOG_I(format,...)                   do{}while(0)
+#endif
+
+#if DBG_D != 0
+#define DBG_LOG_D(format,...)                   _DBG_OUT(DBG_COL_RESET       "Debug:"  format DBG_COL_RESET, ##__VA_ARGS__)
+#else
+#define DBG_LOG_D(format,...)                   do{}while(0)
+#endif
 
 
 
