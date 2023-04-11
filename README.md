@@ -10,7 +10,7 @@ common 头文件
 
 | Date       | version | bref                     |
 | ---------- | ------- | ------------------------ |
-|            | 0.1.0   | first commit             |
-| 2021.12.28 | 0.1.1   | add bit<br>encoding utf8 |
-|            |         |                          |
+|            | 0.0.1   | first commit             |
+| 2021.12.28 | 0.0.2   | add bit<br>encoding utf8 |
+| 2023.04.11 | 0.1.0   | 改进debug log输出相关内容 |
 
