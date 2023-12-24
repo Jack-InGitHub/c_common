@@ -31,7 +31,7 @@
 /* Redirect Includes ***************************/
 #include <stdio.h>
 #include <string.h>
-
+#include <sys/times.h>          // 用于获取Ticks
 /* Config --------------------------------------------------------------------*/
 #define DEBUG_MAIN_OUT_EN                                           ///< DEBUG LOG MAIN EN  总开关
 
@@ -40,10 +40,14 @@
 
 #define DEBGU_NEWLINE_EN                                            ///< 使能log换行
 
-#define DEBGU_DISPLAY_FILE_AND_LINE_EN                              ///< log中显示 文件及行数
+// #define DEBUG_DISPLAY_FILE                                          ///< 日志输出当前 文件名
+#define DEBUG_DISPLAY_LINE                                          ///< 日志输出当前 行号
+#define DEBUG_DISPLAY_FUNC                                          ///< 日志输出当前 函数名
+#define DEBUG_DISPLAY_TICKET                                        ///< 日志输出当前 系统时间
 
 #define DBG_LOG_COLOR_EN                                            ///< 启用颜色支持
 
+#define DBG_TIME_FUN_EN                                             ///< 启用DBG_TIME() 宏 的输出
 #define DBG_PRINT_FUN_EN                                            ///< 启用DBG_PRINT() 宏 的输出
 #define DBG_LOG_COL_FUN_EN                                          ///< 启用DBG_LOG_COL() 宏 的输出
 #define DBG_LOG_FUN_EN                                              ///< 启用DBG_LOG() 宏 的输出
@@ -62,6 +66,7 @@
 
 /* Redirect ************************************/
 #define _DBG_OUT_RAW(format, ...)               printf(format, ##__VA_ARGS__)  ///< 重定向DBG输出
+#define _DBG_GET_TICKET()                       times(NULL)                    ///< 重定向 获取系统时间函数
 
 /* DEFINE --------------------------------------------------------------------*/
 #ifdef DBG_LOG_COLOR_EN
@@ -111,10 +116,50 @@
 #endif  /* end of DBG_LOG_COLOR_EN */
 
 /* MACRO ---------------------------------------------------------------------*/
-#ifdef  DEBGU_NEWLINE_EN
-#define DEBGU_NEWLINE                           "\n"
+#ifdef  DEBUG_NEWLINE_EN
+#define DEBUG_NEWLINE                           "\n"
 #else
-#define DEBGU_NEWLINE
+#define DEBUG_NEWLINE
+#endif
+
+#ifdef DEBUG_DISPLAY_TICKET
+#define DEBUG_DISPLAY_TICKET_AVG                "[%lu]"                          //"[%08u]"
+#define DEBUG_DISPLAY_TICKET_STRING             _DBG_GET_TICKET(),
+#else
+#define DEBUG_DISPLAY_TICKET_AVG                
+#define DEBUG_DISPLAY_TICKET_STRING             
+#endif
+
+#ifdef DEBUG_DISPLAY_FILE
+#define DEBUG_DISPLAY_FILE_AVG                  ":%s"
+#define DEBUG_DISPLAY_FILE_STRING               __FILE__,
+#else
+#define DEBUG_DISPLAY_FILE_AVG                  
+#define DEBUG_DISPLAY_FILE_STRING               
+#endif
+
+#ifdef DEBUG_DISPLAY_LINE
+#define DEBUG_DISPLAY_LINE_AVG                  ":%d"
+#define DEBUG_DISPLAY_LINE_STRING               __LINE__,
+#else
+#define DEBUG_DISPLAY_LINE_AVG                  
+#define DEBUG_DISPLAY_LINE_STRING               
+#endif
+
+#ifdef DEBUG_DISPLAY_FUNC
+#define DEBUG_DISPLAY_FUNC_AVG                  ":%s"
+#define DEBUG_DISPLAY_FUNC_STRING               __func__            // TDB
+#else
+#define DEBUG_DISPLAY_FUNC_AVG                  
+#define DEBUG_DISPLAY_FUNC_STRING               
+#endif
+
+#if defined(DEBUG_DISPLAY_FILE) || defined(DEBUG_DISPLAY_LINE) || defined(DEBUG_DISPLAY_FUNC) 
+#define DEBUG_DISPLAY_PAR_AVG                   DEBUG_DISPLAY_TICKET_AVG "[" DEBUG_DISPLAY_FILE_AVG DEBUG_DISPLAY_LINE_AVG DEBUG_DISPLAY_FUNC_AVG "]:"
+#define DEBUG_DISPLAY_PAR_STRING                DEBUG_DISPLAY_TICKET_STRING DEBUG_DISPLAY_FILE_STRING DEBUG_DISPLAY_LINE_STRING DEBUG_DISPLAY_FUNC_STRING
+#else
+#define DEBUG_DISPLAY_PAR_AVG                   DEBUG_DISPLAY_TICKET_AVG
+#define DEBUG_DISPLAY_PAR_STRING                DEBUG_DISPLAY_TICKET_STRING
 #endif
 
 #ifdef  DEBGU_DISPLAY_FILE_AND_LINE_EN
@@ -139,64 +184,68 @@
 #define DBG_LOG_COL(color, format, ...)         do{}while(0)
 #endif  /* end of DBG_LOG_COL_FUN_EN */
 
+#ifdef DBG_TIME_FUN_EN
+#define DBG_TIME(format, ...)                   _DBG_OUT("[%lu]" format, _DBG_GET_TICKET(), ##__VA_ARGS__)
+#else
+#define DBG_TIME(format, ...)                   do{}while(0)
+#endif // DBG_TIME_FUN_EN
+
 #ifdef DBG_LOG_FUN_EN
     #ifdef DBG_LOG_COLOR_EN
-    #define DBG_LOG(type, format, ...)                                          \
-    do{                                                                         \
-    if      (type != 0 && type == DBG_F)                                        \
-    {                                                                           \
-        _DBG_OUT(DBG_COL_BG_BRIGHT_RED DBG_COL_TEXT_BRIGHT_YELLOW "F:" format DBG_COL_RESET, ##__VA_ARGS__); \
-    }                                                                           \
-    if      (type != 0 && type == DBG_E)                                        \
-    {                                                                           \
-        _DBG_OUT(DBG_COL_TEXT_RED    "E:" format DBG_COL_RESET, ##__VA_ARGS__); \
-    }                                                                           \
-    else if (type != 0 && type == DBG_W)                                        \
-    {                                                                           \
-        _DBG_OUT(DBG_COL_TEXT_YELLOW "W:" format DBG_COL_RESET, ##__VA_ARGS__); \
-    }                                                                           \
-    else if (type != 0 && type == DBG_I)                                        \
-    {                                                                           \
-        _DBG_OUT(DBG_COL_TEXT_CYAN   "I:" format DBG_COL_RESET, ##__VA_ARGS__); \
-    }                                                                           \
-    else if (type != 0 && type == DBG_D)                                        \
-    {                                                                           \
-        _DBG_OUT(DBG_COL_RESET       "D:" format DBG_COL_RESET, ##__VA_ARGS__); \
-    }                                                                           \
+    #define DBG_LOG(type, format, ...)                                              \
+    do {                                                                            \
+        if (type == 0) {                                                            \
+            do{}while(0);                                                           \
+        }                                                                           \
+        else if (type == DBG_F) {                                                   \
+            _DBG_OUT(DBG_COL_BG_BRIGHT_RED DBG_COL_TEXT_BRIGHT_YELLOW "F:" DEBUG_DISPLAY_PAR_AVG format DBG_COL_RESET, DEBUG_DISPLAY_PAR_STRING, ##__VA_ARGS__); \
+        }                                                                           \
+        else if (type == DBG_E) {                                                   \
+            _DBG_OUT(DBG_COL_TEXT_RED    "E:" DEBUG_DISPLAY_PAR_AVG format DBG_COL_RESET, DEBUG_DISPLAY_PAR_STRING, ##__VA_ARGS__); \
+        }                                                                           \
+        else if (type == DBG_W) {                                                   \
+            _DBG_OUT(DBG_COL_TEXT_YELLOW "W:" DEBUG_DISPLAY_PAR_AVG format DBG_COL_RESET, DEBUG_DISPLAY_PAR_STRING, ##__VA_ARGS__); \
+        }                                                                           \
+        else if (type == DBG_I) {                                                   \
+            _DBG_OUT(DBG_COL_TEXT_CYAN   "I:" DEBUG_DISPLAY_PAR_AVG format DBG_COL_RESET, DEBUG_DISPLAY_PAR_STRING, ##__VA_ARGS__); \
+        }                                                                           \
+        else if (type == DBG_D) {                                                   \
+            _DBG_OUT(DBG_COL_TEXT_GREEN  "D:" DEBUG_DISPLAY_PAR_AVG format DBG_COL_RESET, DEBUG_DISPLAY_PAR_STRING, ##__VA_ARGS__); \
+        }                                                                           \
     }while(0)
     #else
-    #define DBG_LOG(type, format, ...)          do{ if(type!=0){_DBG_OUT(#type ":" format, ##__VA_ARGS__ );} }while(0)
+    #define DBG_LOG(type, format, ...)          do{ if(type!=0){_DBG_OUT(#type ":" DEBUG_DISPLAY_PAR_AVG format, DEBUG_DISPLAY_PAR_STRING, ##__VA_ARGS__ );} }while(0)
     #endif  /* end of DBG_LOG_COLOR_EN */
 #else
 #define DBG_LOG(type, format, ...)              do{}while(0)
 #endif /* end of DBG_LOG_FUN_EN */
 
 #if DBG_F != 0
-#define DBG_LOG_F(format,...)                   _DBG_OUT(DBG_COL_BG_BRIGHT_RED DBG_COL_TEXT_BRIGHT_YELLOW "Fatal:" format DBG_COL_RESET, ##__VA_ARGS__)
+#define DBG_LOG_F(format,...)                   _DBG_OUT(DBG_COL_BG_BRIGHT_RED DBG_COL_TEXT_BRIGHT_YELLOW "Fatal:" DEBUG_DISPLAY_PAR_AVG format DBG_COL_RESET, DEBUG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
 #else
 #define DBG_LOG_F(format,...)                   do{}while(0)
 #endif
 
 #if DBG_E != 0
-#define DBG_LOG_E(format,...)                   _DBG_OUT(DBG_COL_TEXT_RED    "Error:"  format DBG_COL_RESET, ##__VA_ARGS__)
+#define DBG_LOG_E(format,...)                   _DBG_OUT(DBG_COL_TEXT_RED    "Error:"  DEBUG_DISPLAY_PAR_AVG format DBG_COL_RESET, DEBUG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
 #else
 #define DBG_LOG_E(format,...)                   do{}while(0)
 #endif
 
 #if DBG_W != 0
-#define DBG_LOG_W(format,...)                   _DBG_OUT(DBG_COL_TEXT_YELLOW "Waring:" format DBG_COL_RESET, ##__VA_ARGS__)
+#define DBG_LOG_W(format,...)                   _DBG_OUT(DBG_COL_TEXT_YELLOW "Waring:" DEBUG_DISPLAY_PAR_AVG format DBG_COL_RESET, DEBUG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
 #else
 #define DBG_LOG_W(format,...)                   do{}while(0)
 #endif
 
 #if DBG_I != 0
-#define DBG_LOG_I(format,...)                   _DBG_OUT(DBG_COL_TEXT_CYAN   "Info:"   format DBG_COL_RESET, ##__VA_ARGS__)
+#define DBG_LOG_I(format,...)                   _DBG_OUT(DBG_COL_TEXT_CYAN   "Info:"   DEBUG_DISPLAY_PAR_AVG format DBG_COL_RESET, DEBUG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
 #else
 #define DBG_LOG_I(format,...)                   do{}while(0)
 #endif
 
 #if DBG_D != 0
-#define DBG_LOG_D(format,...)                   _DBG_OUT(DBG_COL_RESET       "Debug:"  format DBG_COL_RESET, ##__VA_ARGS__)
+#define DBG_LOG_D(format,...)                   _DBG_OUT(DBG_COL_RESET       "Debug:"  DEBUG_DISPLAY_PAR_AVG format DBG_COL_RESET, DEBUG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
 #else
 #define DBG_LOG_D(format,...)                   do{}while(0)
 #endif
