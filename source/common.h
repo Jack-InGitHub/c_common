@@ -30,7 +30,7 @@
 #include <stdint.h>
 #include <string.h>
 
-// #include "bool.h"
+#include "debug_log.h"
 
 /* Board Support define ------------------------------------------------------*/
 #define     SYSTEM_CORE_CLOCK       96000000ul
