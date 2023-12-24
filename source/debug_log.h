@@ -38,7 +38,7 @@
 /* Config **************************************/
 #ifdef  DEBUG_MAIN_OUT_EN
 
-#define DEBGU_NEWLINE_EN                                            ///< 使能log换行
+#define DEBUG_NEWLINE_EN                                            ///< 使能log换行
 
 // #define DEBUG_DISPLAY_FILE                                          ///< 日志输出当前 文件名
 #define DEBUG_DISPLAY_LINE                                          ///< 日志输出当前 行号
@@ -119,7 +119,7 @@
 #ifdef  DEBUG_NEWLINE_EN
 #define DEBUG_NEWLINE                           "\n"
 #else
-#define DEBUG_NEWLINE
+#define DEBUG_NEWLINE                           ""
 #endif
 
 #ifdef DEBUG_DISPLAY_TICKET
@@ -162,11 +162,7 @@
 #define DEBUG_DISPLAY_PAR_STRING                DEBUG_DISPLAY_TICKET_STRING
 #endif
 
-#ifdef  DEBGU_DISPLAY_FILE_AND_LINE_EN
-#define _DBG_OUT(format, ...)                   _DBG_OUT_RAW("[%s:%d]" format DEBGU_NEWLINE, __FILE__, __LINE__, ##__VA_ARGS__)
-#else
-#define _DBG_OUT(format, ...)                   _DBG_OUT_RAW(format DEBGU_NEWLINE, ##__VA_ARGS__)
-#endif
+#define _DBG_OUT(format, ...)                   _DBG_OUT_RAW(format DEBUG_NEWLINE, ##__VA_ARGS__)
 
 #ifdef DBG_PRINT_FUN_EN
 #define DBG_PRINT(format, ...)                  _DBG_OUT(format, ##__VA_ARGS__)

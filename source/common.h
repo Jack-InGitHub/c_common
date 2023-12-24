@@ -88,9 +88,15 @@
 #define BYTE_2                      (BIT_23 | BIT_22 | BIT_21 | BIT_20 | BIT_19 | BIT_18 | BIT_17 | BIT_16 )
 #define BYTE_3                      (BIT_31 | BIT_30 | BIT_29 | BIT_28 | BIT_27 | BIT_26 | BIT_25 | BIT_24 )
 
+#ifndef UINT32_MAX
 #define UINT32_MAX                  (0xFFFFFFFF)
+#endif // !UINT32_MAX
+#ifndef UINT16_MAX
 #define UINT16_MAX                  (0xFFFF)
+#endif // !UINT16_MAX
+#ifndef UINT8_MAX
 #define UINT8_MAX                   (0xFF)
+#endif // !UINT8_MAX
 
 /* Compiler Related Definitions ***************/
 #if defined(__CC_ARM) || defined(__CLANG_ARM)       /* ARM Compiler */
