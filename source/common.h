@@ -137,7 +137,27 @@
 
 /* USEFUL *************************************/
 #define MEM_ZERO_SET(x)                     do{ memset((void*)&(x), 0l, (sizeof(x))); }while(0)
+#define ARR_GET_LEN(x)                      (sizeof(x)/sizeof(x[0]))                        ///< 获取元素个数
+#define ARR_GET_MAX(x)                      (sizeof(x)/sizeof(x[0])-1)                      ///< 获取数组元素最大的 index 
 
+// 编译日期相关 compile
+#define COMP_YEAR                           ((__DATE__[7] - '0') * 1000 + (__DATE__[8] - '0') * 100 + (__DATE__[9] - '0') * 10 + (__DATE__[10] - '0'))
+#define COMP_MONTH                          (__DATE__[2] == 'n' ? 1                             \
+                                            : __DATE__[2] == 'b' ? 2                            \
+                                            : __DATE__[2] == 'r' ? (__DATE__[0] == 'M' ? 3 : 4) \
+                                            : __DATE__[2] == 'y' ? 5                            \
+                                            : __DATE__[2] == 'n' ? 6                            \
+                                            : __DATE__[2] == 'l' ? 7                            \
+                                            : __DATE__[2] == 'g' ? 8                            \
+                                            : __DATE__[2] == 'p' ? 9                            \
+                                            : __DATE__[2] == 't' ? 10                           \
+                                            : __DATE__[2] == 'v' ? 11 : 12)
+#define COMP_DAY                            ((__DATE__[4] == ' ' ? 0 : __DATE__[4] - '0') * 10 + (__DATE__[5] - '0'))
+#define COMP_HOUR                           ((__TIME__[0] - '0') * 10 + (__TIME__[1] - '0'))
+#define COMP_MINUTE                         ((__TIME__[3] - '0') * 10 + (__TIME__[4] - '0'))
+#define COMP_SECOND                         ((__TIME__[6] - '0') * 10 + (__TIME__[7] - '0'))
+
+// 获取最大最小值
 #define MAX(a,b)                            ((a>b)?(a):(b))
 #define MIN(a,b)                            ((a<b)?(a):(b))
 
@@ -174,8 +194,8 @@ typedef enum
   */
 typedef enum
 {
-    eRESET=0,                                             ///< 复位/False
-    eSET=!eRESET                                          ///< 置位/True
+    RESET=0,                                             ///< 复位/False
+    SET=!RESET                                           ///< 置位/True
 } eFlag_t, eBool_t;
 /* Exported typedef ----------------------------------------------------------*/
 typedef                  _Bool      Bool;

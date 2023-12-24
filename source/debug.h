@@ -1,6 +1,6 @@
 /**
  * @file    debug.h
- * @author  PQ.liu
+ * @author  PQ.liu(pq_liu@foxmail.com)
  * @brief   简单日志输出组件
  * @version 0.1.0
  * @date    2023-03-28
@@ -14,9 +14,10 @@
  * </table>
  * @details 输出函数变更时，需要修改 _DBG_OUT_RAW 的重定向
  */
-/*
-    TODO ...
-*/
+ /*
+ __VA_ARGS__   的可变参数不能为0
+ ##__VA_ARGS__ 宏前面加上##的作用在于，当可变参数的个数为0时，这里的##起到把前面多余的","去掉的作用,否则会编译出错。
+ */
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
@@ -26,9 +27,10 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
+
+/* Redirect Includes ***************************/
 #include <stdio.h>
 #include <string.h>
-/* Redirect Includes ***************************/
 
 /* Config --------------------------------------------------------------------*/
 #define DEBUG_MAIN_OUT_EN                                           ///< DEBUG LOG MAIN EN  总开关
