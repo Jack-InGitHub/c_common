@@ -46,21 +46,28 @@ typedef enum _eErrStatus
 }eErrStatus_t;
 
 
-typedef union _uUnionXx
-{
+union _uUnionXx {
     uint8_t                 Arr[4];
     uint32_t                Data;
-}uUnionXx_t;
+};
+typedef union _uUnionXx uUnionXx_t;
 
 
-typedef struct _AirData
-{
-    eErrStatus_t            eErr;                           //enum 变量 前面加 e
-    uint16_t                ADVal;
-    int16_t                 iTempVal;                       //有符号变量 前面加 i
-    eErrStatus_t (*fGetTemperature)(pAirData_t pAirData);   //可选 函数指针 前面加 f
-}AirData_t;
-typedef AirData_t *pAirData_t;                              //指针加 前面加 p
+/**
+ * @brief   这里不要直接使用 typedef 照大多数书籍说明是为了“显式地声明结构体” 
+ *          看很多优秀代码是分开定义的，这里就按分开定义去做吧。
+ *          
+ *          我倒是觉得直接 typedef 简单明了，
+ *          struct _AirData 也不建议使用，把 AirData_t 当作一种数据类型就好了，类似于int等等的数据类型。
+ */
+struct _AirData {
+    eErrStatus_t    eErr;                                       //enum 变量 前面加 e
+    uint16_t        ADVal;
+    int16_t         iTempVal;                                   //有符号变量 前面加 i
+    eErrStatus_t    (*fGetTemperature)(pAirData_t pAirData);    //可选 函数指针 前面加 f
+};
+typedef struct _AirData AirData_t;
+typedef AirData_t *pAirData_t;                                  //指针加 前面加 p
 
 /* Exported Variables --------------------------------------------------------*/
 
