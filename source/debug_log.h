@@ -2,7 +2,7 @@
  * @file    debug.h
  * @author  PQ.liu(pq_liu@foxmail.com)
  * @brief   简单日志输出组件
- * @version @see table
+ * @version V1.0.1
  * @date    2023-03-28
  *
  * @section   History
@@ -31,51 +31,53 @@
 /* Includes ------------------------------------------------------------------*/
 
 /* Redirect Includes ***************************/
+#ifdef _WIN32
 #include <stdio.h>
 #include <string.h>
-
-// 用于获取Ticks
-#ifdef _WIN32
 #include <windows.h>
 #elif defined(__linux__) || defined(__linux) || defined(linux)
+#include <stdio.h>
+#include <string.h>
 #include <sys/times.h>
-#else
+#else   // user defined
 
 #endif
 
 /* Config --------------------------------------------------------------------*/
-#define LOG_MAIN_OUT_EN                         1                   ///< DEBUG LOG MAIN EN  总开关
+#define LOG_MAIN_OUT_EN                             1                   ///< DEBUG LOG MAIN EN  总开关
 
 /* Config **************************************/
-#define LOG_NEWLINE_EN                          1                   ///< 使能log换行
+#define LOG_NEWLINE_EN                              1                   ///< 使能log换行
 ///< 指定行结束符 "\n" "\r\n" "\r" ...
 #ifdef _WIN32
-    #define LOG_NEWLINE_LINE_ENDINGS            "\r\n"
+    #define LOG_NEWLINE_LINE_ENDINGS                "\r\n"
 #else
-    #define LOG_NEWLINE_LINE_ENDINGS            "\n"
+    #define LOG_NEWLINE_LINE_ENDINGS                "\n"
 #endif
 
-#define LOG_DISPLAY_FILE                        0                   ///< 日志输出当前 文件名
-#define LOG_DISPLAY_LINE                        1                   ///< 日志输出当前 行号
-#define LOG_DISPLAY_FUNC                        0                   ///< 日志输出当前 函数名
-#define LOG_DISPLAY_TICKET                      1                   ///< 日志输出当前 系统时间
+#define LOG_DISPLAY_FILE                            0                   ///< 日志输出当前 文件名
+#define LOG_DISPLAY_LINE                            1                   ///< 日志输出当前 行号
+#define LOG_DISPLAY_FUNC                            0                   ///< 日志输出当前 函数名
+#define LOG_DISPLAY_TICKET                          1                   ///< 日志输出当前 系统时间
 
-#define LOG_COLOR_EN                            1                   ///< 启用颜色支持
+#define LOG_COLOR_EN                                1                   ///< 启用颜色支持
 
-#define LOG_TIME_FUN_EN                         1                   ///< 启用 LOG_TIME() 的输出
-#define LOG_RAW_FUN_EN                          1                   ///< 启用 LOG_RAW() 的输出
-#define LOG_COL_FUN_EN                          1                   ///< 启用 LOG_COL() 的输出
-#define LOG_FUN_EN                              1                   ///< 启用 LOG() 的输出
-#define LOGx_FUN_EN                             1                   ///< 启用 LOGx() 的输出 e.g. LOG_E() LOG_F() ...
+#define LOG_TIME_FUN_EN                             1                   ///< 启用 LOG_TIME() 的输出
+#define LOG_PRINTF_FUN_EN                           1                   ///< 启用 LOG_PRINTF() 的输出
+#define LOG_RAW_FUN_EN                              1                   ///< 启用 LOG_RAW() 的输出
+#define LOG_COL_FUN_EN                              1                   ///< 启用 LOG_COL() 的输出
+#define LOG_FUN_EN                                  1                   ///< 启用 LOG() 的输出
+#define LOGx_FUN_EN                                 1                   ///< 启用 LOGx() 的输出 e.g. LOG_E() LOG_F() ...
 
-#define LOGF                                    0x5F                ///< 0x5F 启用 0关闭 FATAL    等级输出
-#define LOGE                                    0x4F                ///< 0x4F 启用 0关闭 ERROR    等级输出
-#define LOGW                                    0x3F                ///< 0x3F 启用 0关闭 WARNING  等级输出
-#define LOGI                                    0x2F                ///< 0x2F 启用 0关闭 INFO     等级输出
-#define LOGD                                    0x1F                ///< 0x1F 启用 0关闭 DEBUG    等级输出
-#define LOGD3                                   0x13                ///< 0x13 启用 0关闭 DEBUG    等级输出
-#define LOGD2                                   0x12                ///< 0x12 启用 0关闭 DEBUG    等级输出
-#define LOGD1                                   0x11                ///< 0x11 启用 0关闭 DEBUG    等级输出
+#define LOGF                                        0x5F                ///< 0x5F 启用 0关闭 FATAL    等级输出
+#define LOGE                                        0x4F                ///< 0x4F 启用 0关闭 ERROR    等级输出
+#define LOGW                                        0x3F                ///< 0x3F 启用 0关闭 WARNING  等级输出
+#define LOGI                                        0x2F                ///< 0x2F 启用 0关闭 INFO     等级输出
+#define LOGD                                        0x1F                ///< 0x1F 启用 0关闭 DEBUG    等级输出
+#define LOGD3                                       0x13                ///< 0x13 启用 0关闭 DEBUG    等级输出
+#define LOGD2                                       0x12                ///< 0x12 启用 0关闭 DEBUG    等级输出
+#define LOGD1                                       0x11                ///< 0x11 启用 0关闭 DEBUG    等级输出
+#define LOGD0                                       0x10                ///< 0x10 启用 0关闭 DEBUG    等级输出
 
 /* tips
 // 使用下面的定义在 x.c 文件内单独控制LOG的输出
@@ -89,20 +91,20 @@
 
 /* Redirect ************************************/
 #if LOG_MAIN_OUT_EN!=0
-    #define _LOG_OUT_RAW(format, ...)               printf(format, ##__VA_ARGS__)  ///< 重定向DBG输出
+    #define _LOG_OUT_RAW(format, ...)               printf(format, ##__VA_ARGS__)   ///< 重定向DBG输出
 #else
     #define _LOG_OUT_RAW(format, ...)
 #endif
 
 #ifdef _WIN32
     #define _LOG_GET_TICKET_AVG                     "%lu"
-    #define _LOG_GET_TICKET()                       GetTickCount()               ///< 重定向 获取系统时间函数
+    #define _LOG_GET_TICKET()                       GetTickCount()                  ///< 重定向 获取系统时间函数
 #elif defined(__linux__) || defined(__linux) || defined(linux)
     #define _LOG_GET_TICKET_AVG                     "%lu"
-    #define _LOG_GET_TICKET()                       times(NULL)                    ///< 重定向 获取系统时间函数
-#else
+    #define _LOG_GET_TICKET()                       times(NULL)                     ///< 重定向 获取系统时间函数
+#else // user defined
     #define _LOG_GET_TICKET_AVG                     "%u"
-    #define _LOG_GET_TICKET()                       times(NULL)                    ///< 重定向 获取系统时间函数
+    #define _LOG_GET_TICKET()                       xTaskGetTickCount(NULL)         ///< 重定向 获取系统时间函数
 #endif
 
 /* DEFINE --------------------------------------------------------------------*/
@@ -236,12 +238,22 @@
 
 /**
  * @brief   LOG_RAW() 宏日志输出
- * @details 无任何格式
+ * @details 原样输出
  */
 #if LOG_RAW_FUN_EN != 0
-    #define LOG_RAW(format, ...)                    _LOG_OUT(format, ##__VA_ARGS__)
+    #define LOG_RAW(format, ...)                    _LOG_OUT_RAW(format, ##__VA_ARGS__)
 #else
     #define LOG_RAW(format, ...)                    do{}while(0)
+#endif  /* end of LOG_RAW_FUN_EN */
+
+/**
+ * @brief   LOG_PRINTF() 宏日志输出
+ * @details 仅带换行
+ */
+#if LOG_PRINTF_FUN_EN != 0
+    #define LOG_PRINTF(format, ...)                 _LOG_OUT(format, ##__VA_ARGS__)
+#else
+    #define LOG_PRINTF(format, ...)                 do{}while(0)
 #endif  /* end of LOG_RAW_FUN_EN */
 
 /**
