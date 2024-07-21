@@ -230,6 +230,28 @@ typedef unsigned int                        DWord;C_
 #define C_MAX(a,b)                          ((a>b)?(a):(b))
 #define C_MIN(a,b)                          ((a<b)?(a):(b))
 
+/* Swap */
+#ifdef __GNUC__
+    #define C_EXPECT(x, y)                      __builtin_expect((x), (y))
+    #ifndef likely
+        #define likely(x)                       __builtin_expect(!!(x),1)
+    #endif
+    #ifndef unlikely
+        #define unlikely(x)                     __builtin_expect(!!(x),0)
+    #endif
+
+    #define C_SWAP32(x)                         __builtin_bswap32(x)
+    #define C_SWAP64(x)                         __builtin_bswap64(x)
+#else
+    #define C_EXPECT(x, y)                      (x)
+    #ifndef likely
+        #define likely(x)                       (x)
+    #endif
+    #ifndef unlikely
+        #define unlikely(x)                     (x)
+    #endif
+#endif
+
 /* Exported types ------------------------------------------------------------*/
 /**
   * @enum   eErrStatus_t
@@ -260,7 +282,7 @@ typedef enum {
   */
 typedef enum {
     RESET=0,                                        ///< 复位/False
-    SET=!RESET                                      //< 置位/True
+    SET=!RESET                                      ///< 置位/True
 } eFlag_t, eBool_t;
 /* Exported typedef ----------------------------------------------------------*/
 
