@@ -31,7 +31,7 @@
 /* Includes ------------------------------------------------------------------*/
 
 /* Redirect Includes ***************************/
-#ifdef _WIN32
+#if defined(_WIN32)
 #include <stdio.h>
 #include <string.h>
 #include <windows.h>
@@ -49,7 +49,7 @@
 /* Config **************************************/
 #define LOG_NEWLINE_EN                              1                   ///< 使能log换行
 ///< 指定行结束符 "\n" "\r\n" "\r" ...
-#ifdef _WIN32
+#if defined(_WIN32)
     #define LOG_NEWLINE_LINE_ENDINGS                "\r\n"
 #else
     #define LOG_NEWLINE_LINE_ENDINGS                "\n"
@@ -96,7 +96,7 @@
     #define _LOG_OUT_RAW(format, ...)
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32)
     #define _LOG_GET_TICKET_AVG                     "%lu"
     #define _LOG_GET_TICKET()                       GetTickCount()                  ///< 重定向 获取系统时间函数
 #elif defined(__linux__) || defined(__linux) || defined(linux)
@@ -317,9 +317,9 @@
  */
 #if LOGF != 0 && LOGx_FUN_EN != 0
     #if LOG_COLOR_EN != 0
-        #define LOG_F(format,...)                   _LOG_COL(LOGF, "Fatal:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
+        #define LOG_F(format,...)                   _LOG_COL(LOGF, "F:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
     #else
-        #define LOG_F(format,...)                   _LOG_OUT("Fatal:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
+        #define LOG_F(format,...)                   _LOG_OUT("F:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
     #endif
 #else
     #define LOG_F(format,...)                       do{}while(0)
@@ -327,9 +327,9 @@
 
 #if LOGE != 0 && LOGx_FUN_EN != 0
     #if LOG_COLOR_EN != 0
-        #define LOG_E(format,...)                   _LOG_COL(LOGE, "Error:"  LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
+        #define LOG_E(format,...)                   _LOG_COL(LOGE, "E:"  LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
     #else
-        #define LOG_E(format,...)                   ("Error:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
+        #define LOG_E(format,...)                   _LOG_OUT("E:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
     #endif
 #else
     #define LOG_E(format,...)                       do{}while(0)
@@ -337,9 +337,9 @@
 
 #if LOGW != 0 && LOGx_FUN_EN != 0
     #if LOG_COLOR_EN != 0
-        #define LOG_W(format,...)                   _LOG_COL(LOGW, "Waring:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
+        #define LOG_W(format,...)                   _LOG_COL(LOGW, "W:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
     #else
-        #define LOG_W(format,...)                   ("Waring:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
+        #define LOG_W(format,...)                   _LOG_OUT("W:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
     #endif
 #else
     #define LOG_W(format,...)                       do{}while(0)
@@ -347,9 +347,9 @@
 
 #if LOGI != 0 && LOGx_FUN_EN != 0
     #if LOG_COLOR_EN != 0
-        #define LOG_I(format,...)                   _LOG_COL(LOGI, "Info:"   LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
+        #define LOG_I(format,...)                   _LOG_COL(LOGI, "I:"   LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
     #else
-        #define LOG_I(format,...)                   ("Info:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
+        #define LOG_I(format,...)                   _LOG_OUT("I:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
     #endif
 #else
     #define LOG_I(format,...)                       do{}while(0)
@@ -357,9 +357,9 @@
 
 #if LOGD != 0 && LOGx_FUN_EN != 0
     #if LOG_COLOR_EN != 0
-        #define LOG_D(format,...)                   _LOG_COL(LOGD, "Debug:"  LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
+        #define LOG_D(format,...)                   _LOG_COL(LOGD, "D:"  LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
     #else
-        #define LOG_D(format,...)                   ("Debug:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
+        #define LOG_D(format,...)                   _LOG_OUT("D:" LOG_DISPLAY_PAR_AVG format LOG_DISPLAY_PAR_STRING, ##__VA_ARGS__)
     #endif
 #else
     #define LOG_D(format,...)                       do{}while(0)

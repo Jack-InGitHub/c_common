@@ -28,8 +28,13 @@
 
 // log test functions
 void DebugLogFunTest(void) {
+    _LOG_OUT_RAW(LOG_NEWLINE_LINE_ENDINGS LOG_NEWLINE_LINE_ENDINGS LOG_NEWLINE_LINE_ENDINGS);
+    
     LOG_RAW("LOG_RAW() function test");
     LOG_RAW("LOG_RAW() function test arguments %d %s", __LINE__, __DATE__);
+    
+    LOG_PRINTF("LOG_PRINTF() function test");
+    LOG_PRINTF("LOG_PRINTF() function test arguments %d %s", __LINE__, __DATE__);
 
     LOG_COL( LOG_COL_TEXT_GREEN LOG_COL_BG_RED, "LOG_COL() function test");
     LOG_COL( LOG_COL_TEXT_BLUE LOG_COL_BG_CYAN, "LOG_COL() function test arguments %d %s", __LINE__, __DATE__);
